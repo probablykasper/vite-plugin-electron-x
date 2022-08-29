@@ -1,0 +1,45 @@
+{
+	"name": "vite-plugin-electron-x",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "tsup src/index.ts --clean --dts --format esm,cjs --watch",
+		"build": "tsup src/index.ts --clean --dts --format esm,cjs",
+		"prepublishOnly": "npm run build"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"devDependencies": {
+		"electron": "^20.1.0",
+		"tsup": "^6.2.3",
+		"typescript": "^4.8.2",
+		"unbuild": "^0.8.9",
+		"vite": "^3.0.9"
+	},
+	"peerDependencies": {
+		"electron": "*",
+		"vite": "^3.0.0"
+	},
+	"prettier": {
+		"useTabs": true,
+		"printWidth": 100,
+		"semi": false,
+		"singleQuote": true,
+		"pluginSearchDirs": [
+			"."
+		]
+	}
+}
