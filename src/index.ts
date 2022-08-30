@@ -137,15 +137,12 @@ function resolveDevOptions(
 ): Required<DevOptions> | false {
 	if (dev === false) return false
 
-	console.log('redev', !!dev.entry, main)
-
 	let entry
 	if (dev.entry) {
 		entry = dev.entry
 	} else if (main && main.outDir) {
 		const basename = path.basename(main.entry)
 		entry = path.resolve(main.outDir, basename)
-		console.log('--------', entry)
 	} else {
 		console.error(
 			'No entry point found for Electron dev server. You must specify `main.entry` or `dev.entry`'
@@ -185,8 +182,13 @@ function dev(server: ViteDevServer, options: Required<DevOptions>) {
 		const env = { ...defaultEnv, ...options.env }
 
 		console.log('\nStarting Electron...')
-		spawnElectron([options.entry], env)
+		await spawnElectron([options.entry], env)
 	})
+}
+
+/* eslint-disable no-var */
+declare global {
+	var electronStarted: boolean
 }
 
 const localhosts = ['localhost', '127.0.0.1', '::1', '0000:0000:0000:0000:0000:0000:0000:0001']
@@ -221,6 +223,14 @@ export function electron(options: Options): Plugin[] {
 		},
 		async configureServer(server) {
 			const resolvedOptions = resolveOptions(options, viteConfig)
+
+			if (global.electronStarted && options.dev) {
+				// avoid dangling electron instances
+				console.log('❗You may need to restart Electron to see your changes.')
+				return
+			}
+			global.electronStarted = true
+
 			await handleOutDirCleaning(resolvedOptions, viteConfig)
 			if (resolvedOptions.main !== false) {
 				const outputEntry = await build(resolvedOptions.main, viteConfig)
