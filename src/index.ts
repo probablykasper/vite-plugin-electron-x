@@ -1,56 +1,8 @@
-import { spawn } from 'child_process'
 import path from 'path'
-import {
-	Plugin,
-	ResolvedConfig,
-	build as viteBuild,
-	BuildOptions as ViteBuildOptions,
-	ViteDevServer,
-	PluginOption,
-} from 'vite'
-import fs from 'fs'
+import { Plugin, ResolvedConfig, build as viteBuild, ViteDevServer } from 'vite'
 import { builtinModules } from 'module'
-
-const electronDir = path.resolve(process.cwd(), 'node_modules', 'electron')
-
-// imitates `electron/index.js`
-function getElectronPath() {
-	const pathFile = path.join(electronDir, 'path.txt')
-
-	let executablePath: string | undefined
-	if (fs.existsSync(pathFile)) {
-		executablePath = fs.readFileSync(pathFile, 'utf-8')
-	}
-	if (process.env.ELECTRON_OVERRIDE_DIST_PATH) {
-		return path.join(process.env.ELECTRON_OVERRIDE_DIST_PATH, executablePath || 'electron')
-	}
-	if (executablePath) {
-		return path.join(electronDir, 'dist', executablePath)
-	}
-	console.error('Could not get Electron path')
-	process.exit(1)
-}
-
-// Spawn electron, imitates `electron/cli.js`
-async function spawnElectron(args: string[], env: NodeJS.ProcessEnv) {
-	const electronPath = getElectronPath()
-	const child = spawn(electronPath, args, { stdio: 'inherit', env, windowsHide: false })
-	child.on('close', (code, signal) => {
-		if (code === null) {
-			console.error(electronPath, 'exited with signal', signal)
-			process.exit(1)
-		}
-		process.exit(code)
-	})
-
-	function terminationHandler(signal: NodeJS.Signals) {
-		if (!child.killed) {
-			child.kill(signal)
-		}
-	}
-	process.on('SIGINT', terminationHandler)
-	process.on('SIGTERM', terminationHandler)
-}
+import { rmDirIfExists, spawnElectron } from './utils'
+import { BuildOptions, DevOptions, Options, ResolvedOptions, resolveOptions } from './options'
 
 async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig): Promise<string> {
 	const output = await viteBuild({
@@ -104,69 +56,10 @@ async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig
 	return path.resolve(options.outDir, entries[0].fileName)
 }
 
-function rmDirIfExists(path: string): Promise<void> {
-	return new Promise((resolve, reject) => {
-		fs.rm(path, { recursive: true }, (e) => {
-			if (e && e?.code != 'ENOENT') {
-				reject(e)
-			}
-			resolve()
-		})
-	})
-}
 async function handleOutDirCleaning(options: ResolvedOptions, viteConfig: ResolvedConfig) {
 	if (!viteConfig.build.emptyOutDir) return
 	if (options.main !== false) await rmDirIfExists(options.main.outDir)
 	if (options.preload) await rmDirIfExists(options.preload.outDir)
-}
-
-function resolveBuildOptions(
-	outDirName: 'electron' | 'preload',
-	options: BuildOptions | false,
-	viteConfig: ResolvedConfig
-): Required<BuildOptions> | false {
-	if (options === false) return false
-	return {
-		outDir: options.outDir || path.resolve(viteConfig.build.outDir, outDirName),
-		entry: options.entry,
-		external: options.external || [],
-		sourcemap: options.sourcemap || viteConfig.build.sourcemap,
-		plugins: options.plugins || [],
-		target: options.target || 'node16',
-	}
-}
-function resolveDevOptions(
-	dev: DevOptions | false,
-	main: BuildOptions | false
-): Required<DevOptions> | false {
-	if (dev === false) return false
-
-	let entry
-	if (dev.entry) {
-		entry = dev.entry
-	} else if (main && main.outDir) {
-		const basename = path.basename(main.entry)
-		entry = path.resolve(main.outDir, basename)
-	} else {
-		console.error(
-			'No entry point found for Electron dev server. You must specify `main.entry` or `dev.entry`'
-		)
-		process.exit(1)
-	}
-
-	return {
-		env: dev.env || {},
-		entry,
-	}
-}
-function resolveOptions(options: Options, viteConfig: ResolvedConfig): ResolvedOptions {
-	const main = resolveBuildOptions('electron', options.main, viteConfig)
-	// const mainOurEntry = main.
-	return {
-		main,
-		preload: resolveBuildOptions('preload', options.preload || false, viteConfig),
-		dev: resolveDevOptions(options.dev || {}, main),
-	}
 }
 
 function dev(server: ViteDevServer, options: Required<DevOptions>) {
@@ -253,37 +146,4 @@ export function electron(options: Options): Plugin[] {
 	}
 
 	return [buildPlugin, servePlugin]
-}
-
-export type DevOptions = {
-	/** @default {} */
-	env?: NodeJS.ProcessEnv
-	/** The electron entrypoint. You don't need to set this if you already have `main.entry`. */
-	entry?: string
-}
-export type BuildOptions = {
-	/** Your main or preload electron entrypoint */
-	entry: string
-	outDir?: string
-	/** What to target, like `node16` or `node14.17.0` */
-	target?: ViteBuildOptions['target']
-	/** Override Vite's sourcemap option */
-	sourcemap?: ViteBuildOptions['sourcemap']
-	/** Specify dependencies that shouldn't be bundled. Electron is always externalized. */
-	external?: string[]
-	plugins?: PluginOption[]
-}
-export type Options = {
-	/** Setting this to `false` disables the dev server. */
-	dev?: DevOptions | false
-	/** Setting this to `false` disables bundling of main, in case you only want to use the dev server.
-	 * @default false */
-	main: BuildOptions | false
-	/** @default false */
-	preload?: BuildOptions | false
-}
-type ResolvedOptions = {
-	dev: Required<DevOptions> | false
-	main: Required<BuildOptions> | false
-	preload: Required<BuildOptions> | false
 }
