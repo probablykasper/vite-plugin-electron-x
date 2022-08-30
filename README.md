@@ -20,8 +20,8 @@ export default defineConfig({
 Load the Vite dev server in Electron:
 ```js
 if (process.env.NODE_ENV === "development') {
-  // vite-plugin-electorn-x automatically provides the DEV_PORT environment variable to Electron
-  mainWindow.loadURL(`http://localhost:${process.env.DEV_PORT}`)
+  // vite-plugin-electorn-x automatically provides the VITE_DEV_SERVER_URL environment variable to Electron
+  mainWindow.loadURL(`http://localhost:${process.env.VITE_DEV_SERVER_URL}`)
 }
 ```
 
