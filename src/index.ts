@@ -16,7 +16,7 @@ async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig
 			target: options.target,
 			minify: viteConfig.build.minify,
 			emptyOutDir: false,
-			sourcemap: viteConfig.build.sourcemap,
+			sourcemap: options.sourcemap,
 			outDir: options.outDir,
 			lib: {
 				entry: options.entry,
