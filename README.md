@@ -54,3 +54,25 @@ The Electron main process utomatically receives `VITE_DEV_SERVER_URL`, `VITE_DEV
 - `npm run dev`: Build and watch
 - `npm run build`: Build
 - `npm run format`: Format
+
+### Publish new version
+
+1. Update `CHANGELOG.md`
+2. Check for errors
+    ```
+    npm run lint
+    ```
+3. Bump the version number
+    ```
+    npm version --no-git-tag <version>
+    ```
+4. Build the package
+    ```
+    npm run build
+    ```
+5. Publish the package
+    ```
+    npm publish
+    ```
+6. Commit with a tag in format "v#.#.#"
+7. Create GitHub release with release notes
