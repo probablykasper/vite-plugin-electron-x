@@ -6,6 +6,7 @@ import {
 	build as viteBuild,
 	BuildOptions as ViteBuildOptions,
 	ViteDevServer,
+	PluginOption,
 } from 'vite'
 import fs from 'fs'
 import { builtinModules } from 'module'
@@ -56,6 +57,7 @@ async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig
 		configFile: false,
 		publicDir: false,
 		mode: 'production',
+		plugins: options.plugins,
 		build: {
 			target: options.target,
 			minify: viteConfig.build.minify,
@@ -71,6 +73,7 @@ async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig
 					'electron',
 					...builtinModules.flatMap((m) => [m, `node:${m}`]),
 					...options.external.map((p) => path.resolve(p)),
+					...options.external,
 				],
 				output: {
 					entryFileNames: '[name].js',
@@ -128,6 +131,7 @@ function resolveBuildOptions(
 		entry: options.entry,
 		external: options.external || [],
 		sourcemap: options.sourcemap || viteConfig.build.sourcemap,
+		plugins: options.plugins || [],
 		target: options.target || 'node16',
 	}
 }
@@ -267,6 +271,7 @@ export type BuildOptions = {
 	sourcemap?: ViteBuildOptions['sourcemap']
 	/** Specify dependencies that shouldn't be bundled. Electron is always externalized. */
 	external?: string[]
+	plugins?: PluginOption[]
 }
 export type Options = {
 	/** Setting this to `false` disables the dev server. */
