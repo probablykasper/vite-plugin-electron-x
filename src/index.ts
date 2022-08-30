@@ -21,12 +21,14 @@ async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig
 				formats: ['cjs'],
 			},
 			rollupOptions: {
-				external: [
-					'electron',
-					...builtinModules.flatMap((m) => [m, `node:${m}`]),
-					...options.external.map((p) => path.resolve(p)),
-					...options.external,
-				],
+				external:
+					typeof options.external === 'function'
+						? options.external
+						: [
+								'electron',
+								...builtinModules.flatMap((m) => [m, `node:${m}`]),
+								...[options.external].flat(),
+						  ],
 				output: {
 					entryFileNames: '[name].js',
 				},
@@ -89,7 +91,7 @@ declare global {
 }
 
 const localhosts = ['localhost', '127.0.0.1', '::1', '0000:0000:0000:0000:0000:0000:0000:0001']
-export function electron(options: Options): Plugin[] {
+export function electronX(options: Options): Plugin[] {
 	let viteConfig: ResolvedConfig
 
 	const buildPlugin: Plugin = {

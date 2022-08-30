@@ -1,24 +1,8 @@
 import { BuildOptions as ViteBuildOptions, PluginOption, ResolvedConfig } from 'vite'
 import path from 'path'
 
-export type DevOptions = {
-	/** @default {} */
-	env?: NodeJS.ProcessEnv
-	/** The electron entrypoint. You don't need to set this if you already have `main.entry`. */
-	entry?: string
-}
-export type BuildOptions = {
-	/** Your main or preload electron entrypoint */
-	entry: string
-	outDir?: string
-	/** What to target, like `node16` or `node14.17.0` */
-	target?: ViteBuildOptions['target']
-	/** Override Vite's sourcemap option */
-	sourcemap?: ViteBuildOptions['sourcemap']
-	/** Specify dependencies that shouldn't be bundled. Electron is always externalized. */
-	external?: string[]
-	plugins?: PluginOption[]
-}
+type RollupOptions = Exclude<ViteBuildOptions['rollupOptions'], undefined>
+
 export type Options = {
 	/** Setting this to `false` disables the dev server. */
 	dev?: DevOptions | false
@@ -28,6 +12,40 @@ export type Options = {
 	/** @default false */
 	preload?: BuildOptions | false
 }
+export type DevOptions = {
+	/** Environment variables to pass to the Electron main process.
+	 *
+	 * The following variables will be automatically provided:
+	 * - `VITE_DEV_SERVER_URL`
+	 * - `VITE_DEV_SERVER_HOSTNAME`
+	 * - `VITE_DEV_SERVER_PORT`
+	 * @default {} */
+	env?: NodeJS.ProcessEnv
+	/** The electron entrypoint. You don't need to set this if you already have `main.entry`. */
+	entry?: string
+}
+export type BuildOptions = {
+	/** Your main or preload electron entrypoint */
+	entry: string
+	/** Default:
+	 * - `${viteOutDir}/electron` for main
+	 * - `${viteOutDir}/preload` for preload */
+	outDir?: string
+	/** What to target, like `node16` or `node14.17.0` */
+	target?: ViteBuildOptions['target']
+	/** Override Vite's sourcemap option */
+	sourcemap?: ViteBuildOptions['sourcemap']
+	/** Specify dependencies that shouldn't be bundled.
+	 *
+	 * **If you use a function, you will need to externalize Electron and Node.js buitlins yourself**
+	 *
+	 * See https://rollupjs.org/guide/en/#external for more details
+	 */
+	external?: RollupOptions['external']
+	/** Vite plugins */
+	plugins?: PluginOption[]
+}
+
 export type ResolvedOptions = {
 	dev: Required<DevOptions> | false
 	main: Required<BuildOptions> | false

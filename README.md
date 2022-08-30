@@ -1,6 +1,10 @@
 # vite-plugin-electron-x
 
-A Vite plugin for running Electron in development.
+[![NPM](https://img.shields.io/npm/v/vite-plugin-electron-x.svg)](https://npmjs.com/package/vite-plugin-electron-x)
+[![License](https://img.shields.io/npm/l/vite-plugin-electron-x.svg)](LICENSE)
+[![NPM Downloads](https://img.shields.io/npm/dm/vite-plugin-electron-x.svg)](https://npmjs.com/package/vite-plugin-electron-x)
+
+A Vite plugin for bundling `main.ts`, `preload.ts` and running Electron in development.
 
 ## Usage
 
@@ -8,22 +12,36 @@ Add the plugin in `vite.config.js` like this:
 ```ts
 export default defineConfig({
   plugins: [
-    electronDevServer({
-      env: {
-        NODE_ENV: 'development',
+    electronX({
+      main: {
+        // this will output ./build/electron/main.js
+        entry: './src/electron/main.ts',
+        outDir: './build/electron',
+      },
+      preload: {
+        // this will output ./build/electro/preload.js
+        entry: './src/electron/preload.ts',
+        outDir: './build/electron',
       },
     }),
   ]
 })
 ```
 
-Load the Vite dev server in Electron:
+You can load the dev server in Electron using `process.env.VITE_DEV_SERVER_URL`:
 ```js
-if (process.env.NODE_ENV === "development') {
-  // vite-plugin-electorn-x automatically provides the VITE_DEV_SERVER_URL environment variable to Electron
-  mainWindow.loadURL(`http://localhost:${process.env.VITE_DEV_SERVER_URL}`)
+if (process.env.VITE_DEV_SERVER_URL) {
+  win.loadURL(`http://localhost:${process.env.VITE_DEV_SERVER_URL}`)
+} else {
+  // win.loadURL('your-production-output.html')
 }
 ```
+
+## API
+
+See all options at [src/options.ts](https://github.com/probablykasper/vite-plugin-electron-x/blob/master/src/options.ts)
+
+The Electron main process utomatically receives `VITE_DEV_SERVER_URL`, `VITE_DEV_SERVER_HOSTNAME` and `VITE_DEV_SERVER_PORT`.
 
 ## Dev instructions
 
