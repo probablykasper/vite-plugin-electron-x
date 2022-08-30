@@ -1,8 +1,6 @@
 import { BuildOptions as ViteBuildOptions, PluginOption, ResolvedConfig } from 'vite'
 import path from 'path'
 
-type RollupOptions = Exclude<ViteBuildOptions['rollupOptions'], undefined>
-
 export type Options = {
 	/** Setting this to `false` disables the dev server. */
 	dev?: DevOptions | false
@@ -41,7 +39,7 @@ export type BuildOptions = {
 	 *
 	 * See https://rollupjs.org/guide/en/#external for more details
 	 */
-	external?: RollupOptions['external']
+	external?: Exclude<ViteBuildOptions['rollupOptions'], undefined>['external']
 	/** Vite plugins */
 	plugins?: PluginOption[]
 }

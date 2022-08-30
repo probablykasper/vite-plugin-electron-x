@@ -2,7 +2,9 @@ import path from 'path'
 import { Plugin, ResolvedConfig, build as viteBuild, ViteDevServer } from 'vite'
 import { builtinModules } from 'module'
 import { rmDirIfExists, spawnElectron } from './utils'
-import { BuildOptions, DevOptions, Options, ResolvedOptions, resolveOptions } from './options'
+import { Options, DevOptions, BuildOptions, ResolvedOptions, resolveOptions } from './options'
+
+export type { Options, DevOptions, BuildOptions } from './options'
 
 async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig): Promise<string> {
 	const output = await viteBuild({
@@ -65,6 +67,8 @@ async function handleOutDirCleaning(options: ResolvedOptions, viteConfig: Resolv
 }
 
 function dev(server: ViteDevServer, options: Required<DevOptions>) {
+	const localhosts = ['localhost', '127.0.0.1', '::1', '0000:0000:0000:0000:0000:0000:0000:0001']
+
 	server.httpServer?.once('listening', async () => {
 		const address = server.httpServer?.address() || null
 		if (address === null || typeof address === 'string') {
@@ -87,10 +91,9 @@ function dev(server: ViteDevServer, options: Required<DevOptions>) {
 
 /* eslint-disable no-var */
 declare global {
-	var electronStarted: boolean
+	var vitePluginElectronXelectronStarted: boolean
 }
 
-const localhosts = ['localhost', '127.0.0.1', '::1', '0000:0000:0000:0000:0000:0000:0000:0001']
 export function electronX(options: Options): Plugin[] {
 	let viteConfig: ResolvedConfig
 
@@ -123,12 +126,12 @@ export function electronX(options: Options): Plugin[] {
 		async configureServer(server) {
 			const resolvedOptions = resolveOptions(options, viteConfig)
 
-			if (global.electronStarted && options.dev) {
+			if (global.vitePluginElectronXelectronStarted && options.dev) {
 				// avoid dangling electron instances
 				console.log('❗You may need to restart Electron to see your changes.')
 				return
 			}
-			global.electronStarted = true
+			global.vitePluginElectronXelectronStarted = true
 
 			await handleOutDirCleaning(resolvedOptions, viteConfig)
 			if (resolvedOptions.main !== false) {

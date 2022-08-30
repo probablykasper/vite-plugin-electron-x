@@ -1,5 +1,6 @@
 {
 	"name": "vite-plugin-electron-x",
+	"description": "A Vite plugin for bundling `main.ts`, `preload.ts` and running Electron in development.",
 	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
@@ -41,6 +42,15 @@
 	"peerDependencies": {
 		"electron": "*",
 		"vite": "^3.0.0"
+	},
+	"license": "MIT",
+	"homepage": "https://github.com/probablykasper/vite-plugin-electron-x",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/probablykasper/vite-plugin-electron-x.git"
+	},
+	"bugs": {
+		"url": "https://github.com/probablykasper/vite-plugin-electron-x/issues"
 	},
 	"prettier": {
 		"useTabs": true,
