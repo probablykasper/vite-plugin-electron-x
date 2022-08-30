@@ -34,7 +34,7 @@ function getElectronPath() {
 // Spawn electron, imitates `electron/cli.js`
 async function spawnElectron(args: string[], env: NodeJS.ProcessEnv) {
 	const electronPath = getElectronPath()
-	const child = spawn(electronPath, args, { stdio: 'ignore', env, windowsHide: false })
+	const child = spawn(electronPath, args, { stdio: 'inherit', env, windowsHide: false })
 	child.on('close', (code, signal) => {
 		if (code === null) {
 			console.error(electronPath, 'exited with signal', signal)
