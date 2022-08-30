@@ -1,7 +1,7 @@
 {
 	"name": "vite-plugin-electron-x",
 	"description": "A Vite plugin for bundling `main.ts`, `preload.ts` and running Electron in development.",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"type": "module",
 	"scripts": {
 		"dev": "tsup src/index.ts --clean --dts --format esm,cjs --watch",

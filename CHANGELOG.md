@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.1.0 - 2022 Aug 30
 - Add `minify` option
 - Export `Option` types
 - Fix sourcemap option
