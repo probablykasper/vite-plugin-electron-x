@@ -1,16 +1,33 @@
 import { spawn } from 'child_process'
-import { resolve } from 'path'
+import { resolve, join } from 'path'
 import { default as esbuild, type BuildOptions as EsbuildOptions } from 'esbuild'
 import { BuildOptions as ViteBuildOptions, Plugin, ResolvedConfig } from 'vite'
-import { default as electronPath } from 'electron'
 import fs from 'fs'
 
-// Spawn electron the same way as electron cli
-async function spawnElectron(args: string[], env: NodeJS.ProcessEnv) {
-	if (typeof electronPath !== 'string') {
-		console.error('Could not get Electron path')
-		process.exit(1)
+const electronDir = resolve(process.cwd(), 'node_modules', 'electron')
+
+// imitates `electron/index.js`
+function getElectronPath() {
+	const pathFile = join(electronDir, 'path.txt')
+	console.log(pathFile)
+
+	let executablePath: string | undefined
+	if (fs.existsSync(pathFile)) {
+		executablePath = fs.readFileSync(pathFile, 'utf-8')
 	}
+	if (process.env.ELECTRON_OVERRIDE_DIST_PATH) {
+		return join(process.env.ELECTRON_OVERRIDE_DIST_PATH, executablePath || 'electron')
+	}
+	if (executablePath) {
+		return join(electronDir, 'dist', executablePath)
+	}
+	console.error('Could not get Electron path')
+	process.exit(1)
+}
+
+// Spawn electron, imitates `electron/cli.js`
+async function spawnElectron(args: string[], env: NodeJS.ProcessEnv) {
+	const electronPath = getElectronPath()
 	const child = spawn(electronPath, args, { stdio: 'ignore', env, windowsHide: false })
 	child.on('close', (code, signal) => {
 		if (code === null) {
