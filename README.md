@@ -35,3 +35,4 @@ if (process.env.NODE_ENV === "development') {
 ### Commands
 - `npm run dev`: Build and watch
 - `npm run build`: Build
+- `npm run format`: Format
