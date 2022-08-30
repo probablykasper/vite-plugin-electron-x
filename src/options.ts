@@ -33,6 +33,8 @@ export type BuildOptions = {
 	target?: ViteBuildOptions['target']
 	/** Override Vite's sourcemap option */
 	sourcemap?: ViteBuildOptions['sourcemap']
+	/** Override Vite's sourcemap option */
+	minify?: ViteBuildOptions['minify']
 	/** Specify dependencies that shouldn't be bundled.
 	 *
 	 * **If you use a function, you will need to externalize Electron and Node.js buitlins yourself**
@@ -61,6 +63,7 @@ function resolveBuildOptions(
 		entry: options.entry,
 		external: options.external || [],
 		sourcemap: options.sourcemap || viteConfig.build.sourcemap,
+		minify: options.minify || viteConfig.build.minify,
 		plugins: options.plugins || [],
 		target: options.target || 'node16',
 	}

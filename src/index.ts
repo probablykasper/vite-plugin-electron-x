@@ -6,7 +6,7 @@ import { Options, DevOptions, BuildOptions, ResolvedOptions, resolveOptions } fr
 
 export type { Options, DevOptions, BuildOptions } from './options'
 
-async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig): Promise<string> {
+async function build(options: Required<BuildOptions>): Promise<string> {
 	const output = await viteBuild({
 		configFile: false,
 		publicDir: false,
@@ -14,7 +14,7 @@ async function build(options: Required<BuildOptions>, viteConfig: ResolvedConfig
 		plugins: options.plugins,
 		build: {
 			target: options.target,
-			minify: viteConfig.build.minify,
+			minify: options.minify,
 			emptyOutDir: false,
 			sourcemap: options.sourcemap,
 			outDir: options.outDir,
@@ -108,10 +108,10 @@ export function electronX(options: Options): Plugin[] {
 			const resolvedOptions = resolveOptions(options, viteConfig)
 			await handleOutDirCleaning(resolvedOptions, viteConfig)
 			if (resolvedOptions.main !== false) {
-				await build(resolvedOptions.main, viteConfig)
+				await build(resolvedOptions.main)
 			}
 			if (resolvedOptions.preload) {
-				await build(resolvedOptions.preload, viteConfig)
+				await build(resolvedOptions.preload)
 			}
 		},
 	}
@@ -135,13 +135,13 @@ export function electronX(options: Options): Plugin[] {
 
 			await handleOutDirCleaning(resolvedOptions, viteConfig)
 			if (resolvedOptions.main !== false) {
-				const outputEntry = await build(resolvedOptions.main, viteConfig)
+				const outputEntry = await build(resolvedOptions.main)
 				if (resolvedOptions.dev !== false) {
 					resolvedOptions.dev.entry = outputEntry
 				}
 			}
 			if (resolvedOptions.preload) {
-				await build(resolvedOptions.preload, viteConfig)
+				await build(resolvedOptions.preload)
 			}
 
 			if (resolvedOptions.dev !== false) {

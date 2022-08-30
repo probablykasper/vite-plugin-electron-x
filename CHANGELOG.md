@@ -1,6 +1,7 @@
 # Changelog
 
 ## Next
+- Add `minify` option
 - Export `Option` types
 - Fix sourcemap option
 
