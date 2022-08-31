@@ -1,8 +1,9 @@
 # vite-plugin-electron-x
 
 [![NPM](https://img.shields.io/npm/v/vite-plugin-electron-x.svg)](https://npmjs.com/package/vite-plugin-electron-x)
-[![License](https://img.shields.io/npm/l/vite-plugin-electron-x.svg)](LICENSE)
 [![NPM Downloads](https://img.shields.io/npm/dm/vite-plugin-electron-x.svg)](https://npmjs.com/package/vite-plugin-electron-x)
+[![Docs](https://img.shields.io/badge/docs-paka.dev-935be3)](https://paka.dev/npm/vite-plugin-electron-x)
+
 
 A Vite plugin for bundling `main.ts`, `preload.ts` and running Electron in development.
 
@@ -39,9 +40,7 @@ if (process.env.VITE_DEV_SERVER_URL) {
 
 ## API
 
-See all options at [src/options.ts](https://github.com/probablykasper/vite-plugin-electron-x/blob/master/src/options.ts)
-
-The Electron main process utomatically receives `VITE_DEV_SERVER_URL`, `VITE_DEV_SERVER_HOSTNAME` and `VITE_DEV_SERVER_PORT`.
+Docs: https://paka.dev/npm/vite-plugin-electron-x
 
 ## Dev instructions
 
