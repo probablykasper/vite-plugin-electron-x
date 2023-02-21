@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.2.0 - 2023 Feb 21
 - Add Vite 4 support
 
 ## 1.1.0 - 2022 Aug 30
