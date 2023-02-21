@@ -39,8 +39,8 @@ async function build(options: Required<BuildOptions>): Promise<string> {
 	})
 
 	// Works for Vite 3 and 4
-	if (!('output' in output)) {
 		console.error('Unexpected RollupWatcher')
+	if ('addListener' in output || 'on' in output) {
 		process.exit(1)
 	}
 	const outputs = [output].flat()
