@@ -82,7 +82,7 @@ function resolveDevOptions(
 		entry = path.resolve(main.outDir, basename)
 	} else {
 		console.error(
-			'No entry point found for Electron dev server. You must specify `main.entry` or `dev.entry`'
+			'Error: No entry point found for Electron dev server. You must specify `main.entry` or `dev.entry`'
 		)
 		process.exit(1)
 	}

@@ -39,13 +39,13 @@ async function build(options: Required<BuildOptions>): Promise<string> {
 	})
 
 	// Works for Vite 3 and 4
-		console.error('Unexpected RollupWatcher')
 	if ('addListener' in output || 'on' in output) {
+		console.error('Error: Unexpected RollupWatcher')
 		process.exit(1)
 	}
 	const outputs = [output].flat()
 	if (outputs.length > 1) {
-		console.error('Too many build outputs')
+		console.error('Error: Too many build outputs')
 		process.exit(1)
 	}
 	const entries = []
@@ -55,7 +55,7 @@ async function build(options: Required<BuildOptions>): Promise<string> {
 		}
 	}
 	if (entries.length !== 1) {
-		console.error('Expected 1 output entry, got', entries.length)
+		console.error('Error: Expected 1 output entry, got', entries.length)
 		process.exit(1)
 	}
 	return path.resolve(options.outDir, entries[0].fileName)
@@ -73,7 +73,7 @@ function dev(server: ViteDevServer, options: Required<DevOptions>) {
 	server.httpServer?.once('listening', async () => {
 		const address = server.httpServer?.address() || null
 		if (address === null || typeof address === 'string') {
-			console.error('Unexpected dev server address', address)
+			console.error('Error: Unexpected dev server address', address)
 			process.exit(1)
 		}
 		const protocol = server.config.server.https ? 'https' : 'http'

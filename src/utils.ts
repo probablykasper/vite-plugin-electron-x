@@ -18,7 +18,7 @@ function getElectronPath() {
 	if (executablePath) {
 		return path.join(electronDir, 'dist', executablePath)
 	}
-	console.error('Could not get Electron path')
+	console.error('Error: Could not get Electron path')
 	process.exit(1)
 }
 
