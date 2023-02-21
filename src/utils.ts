@@ -22,25 +22,28 @@ function getElectronPath() {
 	process.exit(1)
 }
 
+let child: ReturnType<typeof spawn> | null = null
+function exitChild(signal?: NodeJS.Signals | number) {
+	if (child) {
+		child.removeAllListeners()
+		child.kill(signal)
+	}
+}
+
 // Spawn electron, imitates `electron/cli.js`
 export async function spawnElectron(args: string[], env: NodeJS.ProcessEnv) {
 	const electronPath = getElectronPath()
-	const child = spawn(electronPath, args, { stdio: 'inherit', env, windowsHide: false })
-	child.on('close', (code, signal) => {
+	exitChild()
+	child = spawn(electronPath, args, { stdio: 'inherit', env, windowsHide: false })
+	child.on('exit', (code, signal) => {
 		if (code === null) {
-			console.error(electronPath, 'exited with signal', signal)
+			console.error(electronPath, 'exited with code null and signal', signal)
 			process.exit(1)
 		}
 		process.exit(code)
 	})
 
-	function terminationHandler(signal: NodeJS.Signals) {
-		if (!child.killed) {
-			child.kill(signal)
-		}
-	}
-	process.on('SIGINT', terminationHandler)
-	process.on('SIGTERM', terminationHandler)
+	process.once('exit', exitChild)
 }
 
 export function rmDirIfExists(path: string): Promise<void> {

@@ -1,5 +1,8 @@
 # Changelog
 
+## Next
+- Fix Electron child process not exiting
+
 ## 1.2.1 - 2023 Feb 21
 - Fix RollupWatcher detection error
 
