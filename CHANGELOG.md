@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.2.1 - 2023 Feb 21
 - Fix RollupWatcher detection error
 
 ## 1.2.0 - 2023 Feb 21
